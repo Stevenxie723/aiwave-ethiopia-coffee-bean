@@ -1,6 +1,6 @@
 import './App.css';
 import { useChatbotEngine } from './domain/ChatbotEngine.tsx';
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { renderChatbot } from './ui/render.js';
 import ReactDOM from 'react-dom';
 import { Mutex } from 'async-mutex';
@@ -20,12 +20,12 @@ function FloatingText({text}) {
       fontSize: '24px',
       width: '100%',
       height: '100%',
-      backgroundColor: 'rgba(255, 255, 255, 0.0)',
+      backgroundColor: 'rgba(50, 151, 160, 0.0)',
       alignItems: 'flex-end',
       justifyContent: 'center',
       display: 'flex',
     }}>
-      <div style={{backgroundColor: 'rgba(255, 255, 255, 0.5)', width: '100%', margin: '50px', padding: '20px', borderRadius: '30px', fontSize: '24px', color: 'white', justifyContent: 'flex-start'}}>
+      <div style={{backgroundColor: 'rgba(50, 151, 160, 0.5)', width: '100%', margin: '50px', padding: '20px', borderRadius: '30px', fontSize: '24px', color: 'white', justifyContent: 'flex-start'}}>
         { text && text !== "" && text.split('\n').map((line, index) => (
           <div key={index} style={{padding: '0px', borderRadius: '30px', fontSize: '24px', color: 'white'}}>
             {line}
@@ -154,7 +154,21 @@ function App() {
 
   const { engineState, transcript, taskArrangementText } = useChatbotEngine(controller);
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   if (!initialized.current) {
+  //     initialized.current = true
+  //     renderChatbot(document.body).then((animation) => {
+  //       // setEyesAnimation(animation);
+  //       eyesAnimation.current = animation;
+  //       eyesAnimation.current?.sleep();
+  //       console.log('chatbot emoji animation: ', animation);
+  //     });
+  //   }
+  // }, []);
+
+  const [startButtonPressed, setStartButtonPressed] = useState(false);
+
+  const initializeChatbotUi = useCallback(() => {
     if (!initialized.current) {
       initialized.current = true
       renderChatbot(document.body).then((animation) => {
@@ -166,19 +180,65 @@ function App() {
     }
   }, []);
 
-  return (
-    <div id="root" className="App">
-      {/* <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Chatbot Engine</p>
-        <p>{transcript}</p>
-        <p>Engine State: {engineState}</p>
-      </header> */}
-      { taskArrangementText && taskArrangementText !== "" &&
-        <FloatingText text={taskArrangementText}/>
-      }
-    </div>
-  );
+  // return (
+  //   <div id="root" className="App">
+  //     {/* <header className="App-header">
+  //       <img src={logo} className="App-logo" alt="logo" />
+  //       <p>Chatbot Engine</p>
+  //       <p>{transcript}</p>
+  //       <p>Engine State: {engineState}</p>
+  //     </header> */}
+  //     { taskArrangementText && taskArrangementText !== "" &&
+  //       <FloatingText text={taskArrangementText}/>
+  //     }
+  //   </div>
+  // );
+
+  if (startButtonPressed) {
+    return (
+      <div id="root" className="App">
+        {/* <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <p>Chatbot Engine</p>
+          <p>{transcript}</p>
+          <p>Engine State: {engineState}</p>
+        </header> */}
+        { taskArrangementText && taskArrangementText !== "" &&
+          <FloatingText text={taskArrangementText}/>
+        }
+      </div>
+    );
+  } else {
+    return (
+      <div id="root" className="App" style={{
+        width: '100%',
+        height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 1.0)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        display: 'flex',
+      }}>
+        {/* <button onClick={() => {
+          setStartButtonPressed(true);
+          initializeChatbotUi();
+        }}>
+          Start Chatbot
+        </button> */}
+        <div style={{
+          padding: '20px', borderRadius: '30px', fontSize: '24px', color: 'white',
+          backgroundColor: '#3297a0', alignItems: 'center',
+          justifyContent: 'center', display: 'flex',
+          fontFamily: 'Pixelify Sans'
+        }}
+          onClick={() => {
+            setStartButtonPressed(true);
+            initializeChatbotUi();
+          }}>
+          Start Chatbot
+        </div>
+      </div>
+    )
+  }
 }
 
 export default App;
